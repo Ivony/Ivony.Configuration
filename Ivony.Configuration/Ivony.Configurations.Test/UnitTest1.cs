@@ -1,7 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using Ivony.Configurations;
 
+[assembly: ConfigurationFile()]
 namespace Ivony.Configurations.Test
 {
   [TestClass]
@@ -24,5 +26,15 @@ namespace Ivony.Configurations.Test
       Assert.AreEqual( obj["test"].ToString(), "abc" );
 
     }
+
+
+    [TestMethod]
+    public void ConfigurationProviders()
+    {
+      var configuration = Configuration.GetConfigurationData();
+
+      Assert.AreEqual( configuration["Test"].ToString(), "test" );
+    }
+
   }
 }
