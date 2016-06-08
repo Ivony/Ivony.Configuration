@@ -13,11 +13,12 @@ namespace Ivony.Configurations
       this.value = value;
     }
 
-    protected override DynamicMetaObject GetMetaObject( Expression parameter )
-    {
-      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, value );
-    }
 
+    protected class DynamicValueProxy : DynamicMetaObject
+    {
+      public DynamicValueProxy( Expression expression )
+        : base( expression, BindingRestrictions.GetTypeRestriction( expression, typeof( ConfigurationValue ) ) ) { }
+    }
 
 
     public override string ToString()
@@ -25,5 +26,14 @@ namespace Ivony.Configurations
       return value;
     }
 
+
+    public override object TryConvert( Type type )
+    {
+      if ( type == typeof( string ) )
+        return value;
+
+      else
+        throw new InvalidCastException();
+    }
   }
 }

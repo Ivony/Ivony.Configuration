@@ -14,17 +14,22 @@ namespace Ivony.Configurations
       Value = value;
     }
 
-    protected override DynamicMetaObject GetMetaObject( Expression parameter )
-    {
-      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, Value );
-    }
-
 
 
 
     public override string ToString()
     {
       return Value.ToString( CultureInfo.InvariantCulture );
+    }
+
+
+    public override object TryConvert( Type type )
+    {
+      if ( type == typeof( bool ) )
+        return Value;
+
+      else
+        throw new InvalidCastException();
     }
 
   }

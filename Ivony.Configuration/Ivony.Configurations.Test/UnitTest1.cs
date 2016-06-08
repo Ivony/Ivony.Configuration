@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using Ivony.Configurations;
 
-[assembly: ConfigurationFile()]
+//[assembly: ConfigurationFile()]
 namespace Ivony.Configurations.Test
 {
   [TestClass]
@@ -23,7 +23,7 @@ namespace Ivony.Configurations.Test
 
       var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"*\": \"abc\" }" ) );
 
-      Assert.AreEqual( obj["test"].ToString(), "abc" );
+      Assert.AreEqual( (string) obj["test"], "abc" );
 
     }
 
@@ -34,6 +34,16 @@ namespace Ivony.Configurations.Test
       var configuration = Configuration.GetConfigurationData();
 
       Assert.AreEqual( configuration["Test"].ToString(), "test" );
+    }
+
+
+    [TestMethod]
+    public void Dynamic()
+    {
+      var obj = (dynamic) ConfigurationObject.Create( JObject.Parse( "{ \"*\": \"abc\" }" ) );
+
+      Assert.AreEqual( (string) obj.test, "abc" );
+      Assert.AreEqual( (string) obj["test"], "abc" );
     }
 
   }

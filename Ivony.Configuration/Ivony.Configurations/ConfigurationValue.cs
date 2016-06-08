@@ -76,11 +76,28 @@ namespace Ivony.Configurations
 
     DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject( Expression parameter )
     {
-      return GetMetaObject( parameter );
+      return new DynamicProxy( parameter, this );
+    }
+
+    private class DynamicProxy : DynamicMetaObject
+    {
+
+      private readonly Type type = typeof( ConfigurationValue );
+
+      public DynamicProxy( Expression expression, ConfigurationValue obj )
+        : base( expression, BindingRestrictions.GetTypeRestriction( expression, obj.GetType() ), obj ) { }
+
+
+
+      public override DynamicMetaObject BindGetMember( GetMemberBinder binder )
+      {
+        var expression = Expression.Call( Expression.Convert( Expression, typeof( ConfigurationValue ) ), type.GetProperty( "Item" ).GetGetMethod(), Expression.Constant( binder.Name, typeof( string ) ) );
+        return new DynamicMetaObject( expression, Restrictions );
+      }
     }
 
 
-    protected abstract DynamicMetaObject GetMetaObject( Expression parameter );
+
 
 
 
@@ -93,54 +110,57 @@ namespace Ivony.Configurations
 
 
 
+
+    public virtual object TryConvert( Type type )
+    {
+      throw new InvalidCastException();
+    }
+
+
+
+
+    private static T CastTo<T>( ConfigurationValue value )
+    {
+      var type = typeof( T );
+      if ( type.IsValueType == false || type.GetGenericTypeDefinition() == typeof( Nullable<> ) )
+      {
+        if ( value == null || value is NullValue )
+          return default( T );
+      }
+
+      return (T) value.TryConvert( type );
+    }
+
+
+
     public static explicit operator string( ConfigurationValue value )
     {
-      if ( value == null || value is NullValue )
-        return null;
 
-      var stringValue = value as StringValue;
-      if ( stringValue == null )
-        throw new InvalidCastException();
-
-      return stringValue.ToString();
+      return CastTo<string>( value );
     }
 
 
 
     public static explicit operator int( ConfigurationValue value )
     {
-      var number = value as NumberValue;
-      if ( value == null || number == null )
-        throw new InvalidCastException();
-
-      return (int) number.Value;
+      return CastTo<int>( value );
     }
 
     public static explicit operator int? ( ConfigurationValue value )
     {
-      if ( value is NullValue )
-        return null;
-
-      return (int) value;
+      return CastTo<int?>( value );
     }
 
 
 
     public static explicit operator decimal( ConfigurationValue value )
     {
-      var number = value as NumberValue;
-      if ( value == null || number == null )
-        throw new InvalidCastException();
-
-      return number.Value;
+      return CastTo<decimal>( value );
     }
 
     public static explicit operator decimal? ( ConfigurationValue value )
     {
-      if ( value is NullValue )
-        return null;
-
-      return (decimal) value;
+      return CastTo<decimal?>( value );
     }
 
 
@@ -148,76 +168,48 @@ namespace Ivony.Configurations
 
     public static explicit operator double( ConfigurationValue value )
     {
-      var number = value as NumberValue;
-      if ( value == null || number == null )
-        throw new InvalidCastException();
-
-      return (double) number.Value;
+      return CastTo<double>( value );
     }
 
     public static explicit operator double? ( ConfigurationValue value )
     {
-      if ( value is NullValue )
-        return null;
-
-      return (double) value;
+      return CastTo<double?>( value );
     }
 
 
 
     public static explicit operator float( ConfigurationValue value )
     {
-      var number = value as NumberValue;
-      if ( value == null || number == null )
-        throw new InvalidCastException();
-
-      return (float) number.Value;
+      return CastTo<float>( value );
     }
 
     public static explicit operator float? ( ConfigurationValue value )
     {
-      if ( value is NullValue )
-        return null;
-
-      return (float) value;
+      return CastTo<float?>( value );
     }
 
 
 
     public static explicit operator long( ConfigurationValue value )
     {
-      var number = value as NumberValue;
-      if ( number == null )
-        throw new InvalidCastException();
-
-      return (long) number.Value;
+      return CastTo<long>( value );
     }
 
     public static explicit operator long? ( ConfigurationValue value )
     {
-      if ( value == null || value is NullValue )
-        return null;
-
-      return (long) value;
+      return CastTo<long?>( value );
     }
 
 
 
     public static explicit operator bool( ConfigurationValue value )
     {
-      var boolean = value as BooleanValue;
-      if ( boolean == null )
-        throw new InvalidCastException();
-
-      return boolean.Value;
+      return CastTo<bool>( value );
     }
 
     public static explicit operator bool? ( ConfigurationValue value )
     {
-      if ( value == null || value is NullValue )
-        return null;
-
-      return (bool) value;
+      return CastTo<bool?>( value );
     }
 
 

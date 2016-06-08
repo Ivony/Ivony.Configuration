@@ -6,9 +6,14 @@ namespace Ivony.Configurations
 {
   internal class NullValue : ConfigurationValue
   {
-    protected override DynamicMetaObject GetMetaObject( Expression parameter )
+
+    public override object TryConvert( Type type )
     {
-      return new DynamicMetaObject( parameter, BindingRestrictions.Empty );
+      if ( type.IsValueType == false || type.GetGenericTypeDefinition() == typeof( Nullable<> ) )
+        return null;
+
+      else
+        throw new InvalidCastException();
     }
   }
 }

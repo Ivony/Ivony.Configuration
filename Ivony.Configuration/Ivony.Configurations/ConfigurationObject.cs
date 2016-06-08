@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Ivony.Configurations
 {
@@ -34,7 +35,7 @@ namespace Ivony.Configurations
     private static Regex nameRegex = new Regex( @"^([a-zA-Z0-9]+)([\.][a-zA-Z0-9]+)*$", RegexOptions.Compiled );
 
 
-    protected ConfigurationValue GetValue( string name )
+    public ConfigurationValue GetValue( string name )
     {
       if ( name == null )
         throw new ArgumentNullException( "name" );
@@ -93,9 +94,7 @@ namespace Ivony.Configurations
 
 
 
-    protected override DynamicMetaObject GetMetaObject( Expression parameter )
-    {
-      throw new NotImplementedException();
-    }
+
+
   }
 }
