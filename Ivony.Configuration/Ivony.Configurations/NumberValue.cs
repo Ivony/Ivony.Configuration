@@ -6,22 +6,22 @@ namespace Ivony.Configurations
 {
   internal class NumberValue : ConfigurationValue
   {
-    private decimal value;
+    public decimal Value { get; }
 
     public NumberValue( decimal value )
     {
-      this.value = value;
+      Value = value;
     }
 
     protected override DynamicMetaObject GetMetaObject( Expression parameter )
     {
-      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, value );
+      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, Value );
     }
 
 
     public override string ToString()
     {
-      return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+      return Value.ToString( System.Globalization.CultureInfo.InvariantCulture );
     }
 
   }

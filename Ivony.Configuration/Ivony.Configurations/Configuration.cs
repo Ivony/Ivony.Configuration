@@ -32,14 +32,14 @@ namespace Ivony.Configurations
 
     private static void InitializeProviders()
     {
-      providers = new ConfigurationProvider[] { new AssemblyConfigurationProvider(), new JsonFileConfigurationProvider() };
+      providers = new ConfigurationProvider[] { new BuiltInConfigurationProvider(), new ExternalConfigurationProvider() };
 
     }
 
 
     private static ConfigurationProvider[] providers;
 
-    public static JObject GetConfigurationData()
+    public static ConfigurationObject GetConfigurationData()
     {
 
       Initialize();
@@ -50,7 +50,7 @@ namespace Ivony.Configurations
         result.Merge( item.GetConfigurationData() );
       }
 
-      return result;
+      return new ConfigurationObject( result );
     }
   }
 }

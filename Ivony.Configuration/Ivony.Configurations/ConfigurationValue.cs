@@ -85,6 +85,142 @@ namespace Ivony.Configurations
 
 
 
+    public virtual ConfigurationValue this[string key] { get { throw new NotSupportedException(); } }
+
+
+
+
+
+
+
+    public static explicit operator string( ConfigurationValue value )
+    {
+      if ( value == null || value is NullValue )
+        return null;
+
+      var stringValue = value as StringValue;
+      if ( stringValue == null )
+        throw new InvalidCastException();
+
+      return stringValue.ToString();
+    }
+
+
+
+    public static explicit operator int( ConfigurationValue value )
+    {
+      var number = value as NumberValue;
+      if ( value == null || number == null )
+        throw new InvalidCastException();
+
+      return (int) number.Value;
+    }
+
+    public static explicit operator int? ( ConfigurationValue value )
+    {
+      if ( value is NullValue )
+        return null;
+
+      return (int) value;
+    }
+
+
+
+    public static explicit operator decimal( ConfigurationValue value )
+    {
+      var number = value as NumberValue;
+      if ( value == null || number == null )
+        throw new InvalidCastException();
+
+      return number.Value;
+    }
+
+    public static explicit operator decimal? ( ConfigurationValue value )
+    {
+      if ( value is NullValue )
+        return null;
+
+      return (decimal) value;
+    }
+
+
+
+
+    public static explicit operator double( ConfigurationValue value )
+    {
+      var number = value as NumberValue;
+      if ( value == null || number == null )
+        throw new InvalidCastException();
+
+      return (double) number.Value;
+    }
+
+    public static explicit operator double? ( ConfigurationValue value )
+    {
+      if ( value is NullValue )
+        return null;
+
+      return (double) value;
+    }
+
+
+
+    public static explicit operator float( ConfigurationValue value )
+    {
+      var number = value as NumberValue;
+      if ( value == null || number == null )
+        throw new InvalidCastException();
+
+      return (float) number.Value;
+    }
+
+    public static explicit operator float? ( ConfigurationValue value )
+    {
+      if ( value is NullValue )
+        return null;
+
+      return (float) value;
+    }
+
+
+
+    public static explicit operator long( ConfigurationValue value )
+    {
+      var number = value as NumberValue;
+      if ( number == null )
+        throw new InvalidCastException();
+
+      return (long) number.Value;
+    }
+
+    public static explicit operator long? ( ConfigurationValue value )
+    {
+      if ( value == null || value is NullValue )
+        return null;
+
+      return (long) value;
+    }
+
+
+
+    public static explicit operator bool( ConfigurationValue value )
+    {
+      var boolean = value as BooleanValue;
+      if ( boolean == null )
+        throw new InvalidCastException();
+
+      return boolean.Value;
+    }
+
+    public static explicit operator bool? ( ConfigurationValue value )
+    {
+      if ( value == null || value is NullValue )
+        return null;
+
+      return (bool) value;
+    }
+
+
 
   }
 }

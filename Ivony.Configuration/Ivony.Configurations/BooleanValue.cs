@@ -7,16 +7,16 @@ namespace Ivony.Configurations
 {
   internal class BooleanValue : ConfigurationValue
   {
-    private bool value;
+    public bool Value { get; }
 
     public BooleanValue( bool value )
     {
-      this.value = value;
+      Value = value;
     }
 
     protected override DynamicMetaObject GetMetaObject( Expression parameter )
     {
-      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, value );
+      return new DynamicMetaObject( parameter, BindingRestrictions.Empty, Value );
     }
 
 
@@ -24,7 +24,7 @@ namespace Ivony.Configurations
 
     public override string ToString()
     {
-      return value.ToString( CultureInfo.InvariantCulture );
+      return Value.ToString( CultureInfo.InvariantCulture );
     }
 
   }

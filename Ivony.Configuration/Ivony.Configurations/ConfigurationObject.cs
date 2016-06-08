@@ -24,7 +24,7 @@ namespace Ivony.Configurations
     }
 
 
-    public ConfigurationValue this[string name]
+    public override ConfigurationValue this[string name]
     {
       get { return ConfigurationValue.Create( GetValueCore( name ) ); }
     }

@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Ivony.Configurations
 {
-  public sealed class AssemblyConfigurationProvider : ConfigurationProvider
+  internal sealed class BuiltInConfigurationProvider : ConfigurationProvider
   {
     public override JObject GetConfigurationData()
     {

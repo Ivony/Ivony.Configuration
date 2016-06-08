@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ivony.Configurations</RootNamespace>
     <AssemblyName>Ivony.Configurations</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,7 +36,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,10 +53,10 @@
     <Compile Include="ConfigurationValue.cs" />
     <Compile Include="NullValue.cs" />
     <Compile Include="NumberValue.cs" />
-    <Compile Include="Providers\AssemblyConfigurationProvider.cs" />
+    <Compile Include="Providers\BulltInConfigurationProvider.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConfigurationProvider.cs" />
-    <Compile Include="Providers\JsonFileConfigurationProvider.cs" />
+    <Compile Include="Providers\ExternalConfigurationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringValue.cs" />
   </ItemGroup>
