@@ -199,18 +199,42 @@ namespace Ivony.Configurations.Test
         var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{ \"test\": 2 }, \"global.A\":{} }" ) );
         Assert.AreEqual( (int?) obj["global.A"]["test.A"], 2 );
       }
+
       {
         var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{}, \"global.A\":{} }" ) );
         Assert.AreEqual( (int?) obj["global.A"]["test.A"], null );
       }
+
       {
         var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{}, \"global.*\":{\"test\": 3} }" ) );
         Assert.AreEqual( (int?) obj["global.A"]["test.A"], 3 );
       }
+
       {
         var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{ \"test\": 2 } }" ) );
         Assert.AreEqual( (int?) obj["global.A"]["test.A"], 1 );
       }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\":{ \"test\": 2 } }" ) );
+        Assert.AreEqual( (int?) obj["global.A"]["test.A"], 2 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\":{} }" ) );
+        Assert.AreEqual( (int?) obj["global.A"]["test.A"], 1 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\": null }" ) );
+        Assert.AreEqual( (int?) obj["global.A"], null );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 } }" ) );
+        Assert.AreEqual( (int?) obj["global.A"], null );
+      }
+
     }
   }
 }
