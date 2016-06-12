@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Collections;
 
 namespace Ivony.Configurations
 {
-  public class ConfigurationObject : ConfigurationValue
+  public class ConfigurationObject : ConfigurationValue, IReadOnlyDictionary<string, ConfigurationValue>
   {
 
 
@@ -34,6 +35,37 @@ namespace Ivony.Configurations
 
     private static Regex nameRegex = new Regex( @"^([a-zA-Z0-9]+)([\.][a-zA-Z0-9]+)*$", RegexOptions.Compiled );
 
+    IEnumerable<string> IReadOnlyDictionary<string, ConfigurationValue>.Keys
+    {
+      get
+      {
+        throw new NotImplementedException();
+      }
+    }
+
+    IEnumerable<ConfigurationValue> IReadOnlyDictionary<string, ConfigurationValue>.Values
+    {
+      get
+      {
+        throw new NotImplementedException();
+      }
+    }
+
+    int IReadOnlyCollection<KeyValuePair<string, ConfigurationValue>>.Count
+    {
+      get
+      {
+        throw new NotImplementedException();
+      }
+    }
+
+    ConfigurationValue IReadOnlyDictionary<string, ConfigurationValue>.this[string key]
+    {
+      get
+      {
+        throw new NotImplementedException();
+      }
+    }
 
     public ConfigurationValue GetValue( string name )
     {
@@ -92,9 +124,35 @@ namespace Ivony.Configurations
 
     }
 
+    bool IReadOnlyDictionary<string, ConfigurationValue>.ContainsKey( string key )
+    {
+      return _data.Property( key ) != null;
+    }
 
+    bool IReadOnlyDictionary<string, ConfigurationValue>.TryGetValue( string key, out ConfigurationValue value )
+    {
+      var property = _data.Property( key );
+      if ( property != null )
+      {
+        value = ConfigurationValue.Create( property.Value );
+        return true;
+      }
 
+      else
+      {
+        value = null;
+        return false;
+      }
+    }
 
+    IEnumerator<KeyValuePair<string, ConfigurationValue>> IEnumerable<KeyValuePair<string, ConfigurationValue>>.GetEnumerator()
+    {
+      return _data.Properties().Select( item => new KeyValuePair<string, ConfigurationValue>( item.Name, ConfigurationValue.Create( item.Value ) ) ).GetEnumerator();
+    }
 
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+      return ((IEnumerable<KeyValuePair<string, ConfigurationValue>>) this).GetEnumerator();
+    }
   }
 }

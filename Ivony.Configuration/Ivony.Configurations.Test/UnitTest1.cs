@@ -21,10 +21,46 @@ namespace Ivony.Configurations.Test
     public void WildcardTest()
     {
 
-      var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"*\": \"abc\" }" ) );
+      {
+        var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"*\": \"abc\" }" ) );
+        Assert.AreEqual( (string) obj["test"], "abc" );
+      }
 
-      Assert.AreEqual( (string) obj["test"], "abc" );
+      {
+        var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"*\": { \"abc\": \"test\" } }" ) );
+        Assert.AreEqual( (string) obj["test"]["abc"], "test" );
+      }
 
+    }
+
+
+    [TestMethod]
+    public void NullableTest()
+    {
+
+      var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"test1\": false }" ) );
+
+      Assert.AreEqual( (bool?) obj["test1"], false );
+      Assert.AreEqual( (bool?) obj["test2"], null );
+
+    }
+
+    [TestMethod]
+    public void ValueTypeTest()
+    {
+
+      var obj = (ConfigurationObject) ConfigurationObject.Create( JObject.Parse( "{ \"test1\": false }" ) );
+
+      Assert.AreEqual( (bool) obj["test1"], false );
+      try
+      {
+        var a = (bool) obj["test2"];
+      }
+      catch ( InvalidCastException e )
+      {
+        return;
+      }
+      Assert.Fail();
     }
 
 

@@ -122,11 +122,29 @@ namespace Ivony.Configurations
     private static T CastTo<T>( ConfigurationValue value )
     {
       var type = typeof( T );
-      if ( type.IsValueType == false || type.GetGenericTypeDefinition() == typeof( Nullable<> ) )
+
+
+      if ( type.IsValueType )
       {
+        if ( type.IsGenericType && type.GetGenericTypeDefinition() == typeof( Nullable<> ) )
+        {
+
+          if ( value == null || value is NullValue )
+            return default( T );
+
+          else
+            return (T) value.TryConvert( Nullable.GetUnderlyingType( type ) );
+        }
+
+
         if ( value == null || value is NullValue )
-          return default( T );
+          throw new InvalidCastException( string.Format( "cannot convert null value to type \"{0}\"", type.AssemblyQualifiedName ) );
       }
+
+
+      if ( value == null || value is NullValue )
+        return default( T );
+
 
       return (T) value.TryConvert( type );
     }
