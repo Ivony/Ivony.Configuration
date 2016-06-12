@@ -34,7 +34,7 @@ namespace Ivony.Configurations
 
 
 
-    private static Regex nameRegex = new Regex( @"^([a-zA-Z0-9]+)([\.][a-zA-Z0-9]+)*$", RegexOptions.Compiled );
+    private static Regex nameRegex = new Regex( @"^([\w-]+)([\.][\w-]+)*$", RegexOptions.Compiled );
 
 
     public ConfigurationValue GetValue( string name )
