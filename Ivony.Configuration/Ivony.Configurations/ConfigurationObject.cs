@@ -52,18 +52,24 @@ namespace Ivony.Configurations
           return value;
       }
 
-
       {
         var parentName = GetParentName( name );
         while ( parentName != null )
         {
-          var value = GetValueCore( parentName );
+          var value = GetValueCore( parentName + ".*" ) ?? GetValueCore( parentName );
           if ( value != null )
             return value;
 
           parentName = GetParentName( parentName );
         }
       }
+
+      {
+        var value = GetValueCore( "*" );
+        if ( value != null )
+          return value;
+      }
+
 
 
       if ( _parent != null )
@@ -72,14 +78,11 @@ namespace Ivony.Configurations
       return null;
     }
 
-    protected ConfigurationValue GetValueCore( string name )
+    protected ConfigurationValue GetValueCore( string name, string propertyName = null )
     {
       JToken value;
       if ( _data.TryGetValue( name, out value ) )
-        return CreateValue( name, value );
-
-      if ( _data.TryGetValue( "*", out value ) )
-        return CreateValue( name, value );
+        return CreateValue( propertyName ?? name, value );
 
       else
         return null;
@@ -89,6 +92,8 @@ namespace Ivony.Configurations
 
     private string GetParentName( string name )
     {
+      name = name.TrimEnd( '.' );
+
       var index = name.LastIndexOf( '.' );
       if ( index <= 0 )
         return null;
@@ -104,12 +109,13 @@ namespace Ivony.Configurations
 
       if ( obj != null )
       {
+
         var parentName = GetParentName( name );
         if ( parentName != null )
-          return new ConfigurationObject( obj, GetValue( parentName ) as ConfigurationObject );
+          return new ConfigurationObject( obj, (GetValueCore( parentName + "." ) ?? GetValue( parentName )) as ConfigurationObject );
 
         else
-          return new ConfigurationObject( obj, null );
+          return new ConfigurationObject( obj, GetValueCore( "." ) as ConfigurationObject );
       }
 
 
