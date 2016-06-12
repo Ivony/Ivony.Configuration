@@ -17,55 +17,25 @@ namespace Ivony.Configurations
 
 
     private JObject _data;
+    ConfigurationObject _parent;
 
 
-
-    internal ConfigurationObject( JObject data )
+    internal ConfigurationObject( JObject data, ConfigurationObject parent )
     {
       _data = data;
+      _parent = parent;
     }
 
 
     public override ConfigurationValue this[string name]
     {
-      get { return ConfigurationValue.Create( GetValueCore( name ) ); }
+      get { return GetValue( name ); }
     }
 
 
 
     private static Regex nameRegex = new Regex( @"^([a-zA-Z0-9]+)([\.][a-zA-Z0-9]+)*$", RegexOptions.Compiled );
 
-    IEnumerable<string> IReadOnlyDictionary<string, ConfigurationValue>.Keys
-    {
-      get
-      {
-        throw new NotImplementedException();
-      }
-    }
-
-    IEnumerable<ConfigurationValue> IReadOnlyDictionary<string, ConfigurationValue>.Values
-    {
-      get
-      {
-        throw new NotImplementedException();
-      }
-    }
-
-    int IReadOnlyCollection<KeyValuePair<string, ConfigurationValue>>.Count
-    {
-      get
-      {
-        throw new NotImplementedException();
-      }
-    }
-
-    ConfigurationValue IReadOnlyDictionary<string, ConfigurationValue>.this[string key]
-    {
-      get
-      {
-        throw new NotImplementedException();
-      }
-    }
 
     public ConfigurationValue GetValue( string name )
     {
@@ -75,54 +45,125 @@ namespace Ivony.Configurations
       if ( nameRegex.IsMatch( name ) == false )
         throw new ArgumentException( "must provide a valid name", "name" );
 
-      return ConfigurationValue.Create( GetValueCore( name ) );
 
+      {
+        var value = GetValueCore( name );
+        if ( value != null )
+          return value;
+      }
+
+
+      {
+        var parentName = GetParentName( name );
+        while ( parentName != null )
+        {
+          var value = GetValueCore( parentName );
+          if ( value != null )
+            return value;
+
+          parentName = GetParentName( parentName );
+        }
+      }
+
+
+      if ( _parent != null )
+        return _parent.GetValue( name );
+
+      return null;
     }
 
-    protected JToken GetValueCore( string name )
+    protected ConfigurationValue GetValueCore( string name )
     {
       JToken value;
       if ( _data.TryGetValue( name, out value ) )
-        return value;
+        return CreateValue( name, value );
 
-      value = FallbackGetValue( name );
-      if ( value == null )
-        return null;
-
-      else
-        return value;
-    }
-
-    protected JToken FallbackGetValue( string name )
-    {
-
-      JToken value;
       if ( _data.TryGetValue( "*", out value ) )
-        return value;
-
-
-      var parentName = GetParentName( name );
-      if ( parentName == null )
-        return null;
-
-      if ( _data.TryGetValue( parentName + ".*", out value ) )
-        return value;
-
+        return CreateValue( name, value );
 
       else
-        return GetValueCore( parentName );
+        return null;
     }
 
 
-    protected string GetParentName( string name )
+
+    private string GetParentName( string name )
     {
       var index = name.LastIndexOf( '.' );
       if ( index <= 0 )
         return null;
 
       return name.Remove( index );
-
     }
+
+
+    private ConfigurationValue CreateValue( string name, JToken value )
+    {
+
+      var obj = value as JObject;
+
+      if ( obj != null )
+      {
+        var parentName = GetParentName( name );
+        if ( parentName != null )
+          return new ConfigurationObject( obj, GetValue( parentName ) as ConfigurationObject );
+
+        else
+          return new ConfigurationObject( obj, null );
+      }
+
+
+
+      return ConfigurationValue.Create( value as JValue );
+    }
+
+
+
+
+
+    public static ConfigurationObject Create( JObject dataObject )
+    {
+      return new ConfigurationObject( dataObject, null );
+    }
+
+
+
+
+
+    public override string ToString()
+    {
+      return _data.ToString();
+    }
+
+
+
+    IEnumerable<string> IReadOnlyDictionary<string, ConfigurationValue>.Keys
+    {
+      get
+      {
+        return _data.Properties().Select( item => item.Name );
+      }
+    }
+
+    IEnumerable<ConfigurationValue> IReadOnlyDictionary<string, ConfigurationValue>.Values
+    {
+      get
+      {
+        return _data.Properties().Select( item => CreateValue( item.Name, item.Value ) );
+
+      }
+    }
+
+    int IReadOnlyCollection<KeyValuePair<string, ConfigurationValue>>.Count
+    {
+      get
+      {
+        return _data.Properties().Count();
+      }
+    }
+
+
+
 
     bool IReadOnlyDictionary<string, ConfigurationValue>.ContainsKey( string key )
     {
@@ -134,7 +175,7 @@ namespace Ivony.Configurations
       var property = _data.Property( key );
       if ( property != null )
       {
-        value = ConfigurationValue.Create( property.Value );
+        value = CreateValue( property.Name, property.Value );
         return true;
       }
 
@@ -147,12 +188,16 @@ namespace Ivony.Configurations
 
     IEnumerator<KeyValuePair<string, ConfigurationValue>> IEnumerable<KeyValuePair<string, ConfigurationValue>>.GetEnumerator()
     {
-      return _data.Properties().Select( item => new KeyValuePair<string, ConfigurationValue>( item.Name, ConfigurationValue.Create( item.Value ) ) ).GetEnumerator();
+      return _data.Properties().Select( item => new KeyValuePair<string, ConfigurationValue>( item.Name, CreateValue( item.Name, item.Value ) ) ).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
       return ((IEnumerable<KeyValuePair<string, ConfigurationValue>>) this).GetEnumerator();
     }
+
+
+
+
   }
 }

@@ -50,7 +50,7 @@ namespace Ivony.Configurations
         result.Merge( item.GetConfigurationData() );
       }
 
-      return new ConfigurationObject( result );
+      return ConfigurationObject.Create( result );
     }
   }
 }
