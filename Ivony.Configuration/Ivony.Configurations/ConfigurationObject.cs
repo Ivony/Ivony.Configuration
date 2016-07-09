@@ -75,13 +75,21 @@ namespace Ivony.Configurations
       var parentName = GetParentName( (string) name );
       var value = _data[name] ?? (parentName == null ? _data["*"] : _data[parentName + ".*"]);
 
-      return GetValueCore( value, parentName );
+      if ( value == null )
+        return null;
+
+      else
+        return GetValueCore( value, parentName );
     }
 
 
 
     private ConfigurationValue GetValueCore( JToken value, string parentName )
     {
+      if ( value == null )
+        throw new ArgumentNullException( "value" );
+
+
       var _value = value as JValue;
       if ( _value != null )
         return Create( _value );
@@ -95,7 +103,7 @@ namespace Ivony.Configurations
         return new ConfigurationObject( obj, parent );
       }
 
-      return null;
+      throw new NotSupportedException();
     }
 
 

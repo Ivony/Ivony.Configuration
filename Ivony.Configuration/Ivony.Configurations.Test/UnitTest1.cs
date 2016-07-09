@@ -236,5 +236,51 @@ namespace Ivony.Configurations.Test
       }
 
     }
+
+
+    [TestMethod]
+    public void InheritTest5()
+    {
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{ \"test\": 2 }, \"global.A\":{} }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], 2 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{}, \"global.A\":{} }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], null );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{}, \"global.*\":{\"test\": 3} }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], 3 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \"global\":{ \"test\": 1 }, \"global.\":{ \"test\": 2 } }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], 1 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\":{ \"test\": 2 } }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], 2 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\":{} }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"]["test.A.B"], 1 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 }, \"*\": null }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"], null );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{  \".\":{ \"test\": 1 } }" ) );
+        Assert.AreEqual( (int?) obj["global.A.B"], null );
+      }
+
+    }
   }
 }
