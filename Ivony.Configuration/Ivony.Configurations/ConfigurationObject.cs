@@ -46,30 +46,20 @@ namespace Ivony.Configurations
         throw new ArgumentException( "must provide a valid name", "name" );
 
 
+
+
+      ConfigurationValue value = null;
+
+
+      var dataName = name;
+      while ( dataName != null )
       {
-        var value = GetValueCore( name );
+        value = GetValueCore( dataName );
         if ( value != null )
           return value;
+
+        dataName = GetParentName( dataName );
       }
-
-      {
-        var parentName = GetParentName( name );
-        while ( parentName != null )
-        {
-          var value = GetValueCore( parentName + ".*" ) ?? GetValueCore( parentName );
-          if ( value != null )
-            return value;
-
-          parentName = GetParentName( parentName );
-        }
-      }
-
-      {
-        var value = GetValueCore( "*" );
-        if ( value != null )
-          return value;
-      }
-
 
 
       if ( _parent != null )
@@ -81,18 +71,43 @@ namespace Ivony.Configurations
 
     protected ConfigurationValue GetValueCore( string name )
     {
-      return GetValueCore( name, name );
+
+      var parentName = GetParentName( (string) name );
+      var value = _data[name] ?? (parentName == null ? _data["*"] : _data[parentName + ".*"]);
+
+      return GetValueCore( value, parentName );
     }
 
 
-    protected ConfigurationValue GetValueCore( string name, string propertyName )
-    {
-      JToken value;
-      if ( _data.TryGetValue( name, out value ) )
-        return CreateValue( propertyName, value );
 
-      else
-        return null;
+    private ConfigurationValue GetValueCore( JToken value, string parentName )
+    {
+      var _value = value as JValue;
+      if ( _value != null )
+        return Create( _value );
+
+
+      var obj = value as JObject;
+      if ( obj != null )
+      {
+        ConfigurationObject parent = GetParent( parentName );
+
+        return new ConfigurationObject( obj, parent );
+      }
+
+      return null;
+    }
+
+
+
+    private ConfigurationObject GetParent( string parentName )
+    {
+      var parentObject = (parentName == null ? _data["."] : _data[parentName + "."]) as JObject;
+      if ( parentObject == null )
+        return parentName == null ? null : GetValue( parentName ) as ConfigurationObject;
+
+      parentName = GetParentName( parentName );
+      return new ConfigurationObject( parentObject, parentName == null ? null : GetValue( parentName ) as ConfigurationObject );
     }
 
 
@@ -100,7 +115,7 @@ namespace Ivony.Configurations
     private string GetParentName( string name )
     {
       if ( name == null )
-        throw new ArgumentNullException( "name" );
+        return null;
 
       var index = name.LastIndexOf( '.' );
       if ( index <= 0 )
@@ -110,30 +125,6 @@ namespace Ivony.Configurations
     }
 
 
-    private ConfigurationValue CreateValue( string name, JToken value )
-    {
-
-      var obj = value as JObject;
-
-      if ( obj != null )
-      {
-
-        if ( string.IsNullOrEmpty( name ) )
-          return new ConfigurationObject( obj, null );
-
-
-        var parentName = GetParentName( name );
-        if ( parentName != null )
-          return new ConfigurationObject( obj, (GetValueCore( parentName + ".", parentName ) ?? GetValue( parentName )) as ConfigurationObject );
-
-        else
-          return new ConfigurationObject( obj, GetValueCore( ".", null ) as ConfigurationObject );
-      }
-
-
-
-      return ConfigurationValue.Create( value as JValue );
-    }
 
 
 
@@ -167,7 +158,7 @@ namespace Ivony.Configurations
     {
       get
       {
-        return _data.Properties().Select( item => CreateValue( item.Name, item.Value ) );
+        return _data.Properties().Select( item => GetValueCore( item.Value, GetParentName( item.Name ) ) );
 
       }
     }
@@ -193,7 +184,7 @@ namespace Ivony.Configurations
       var property = _data.Property( key );
       if ( property != null )
       {
-        value = CreateValue( property.Name, property.Value );
+        value = GetValueCore( property.Value, GetParentName( property.Name ) );
         return true;
       }
 
@@ -206,7 +197,7 @@ namespace Ivony.Configurations
 
     IEnumerator<KeyValuePair<string, ConfigurationValue>> IEnumerable<KeyValuePair<string, ConfigurationValue>>.GetEnumerator()
     {
-      return _data.Properties().Select( item => new KeyValuePair<string, ConfigurationValue>( item.Name, CreateValue( item.Name, item.Value ) ) ).GetEnumerator();
+      return _data.Properties().Select( item => new KeyValuePair<string, ConfigurationValue>( item.Name, GetValueCore( item.Value, GetParentName( item.Name ) ) ) ).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
