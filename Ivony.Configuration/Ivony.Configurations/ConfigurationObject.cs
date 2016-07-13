@@ -12,6 +12,10 @@ using System.Collections;
 
 namespace Ivony.Configurations
 {
+
+  /// <summary>
+  /// 定义配置对象
+  /// </summary>
   public class ConfigurationObject : ConfigurationValue, IReadOnlyDictionary<string, ConfigurationValue>
   {
 
@@ -27,6 +31,11 @@ namespace Ivony.Configurations
     }
 
 
+    /// <summary>
+    /// 获取指定配置名称的配置项
+    /// </summary>
+    /// <param name="name">配置名称</param>
+    /// <returns>配置项</returns>
     public override ConfigurationValue this[string name]
     {
       get { return GetValue( name ); }
@@ -37,6 +46,11 @@ namespace Ivony.Configurations
     private static Regex nameRegex = new Regex( @"^([\w-]+)([\.][\w-]+)*$", RegexOptions.Compiled );
 
 
+    /// <summary>
+    /// 获取指定配置名称的配置项
+    /// </summary>
+    /// <param name="name">配置名称</param>
+    /// <returns>配置项</returns>
     public ConfigurationValue GetValue( string name )
     {
       if ( name == null )
@@ -69,6 +83,13 @@ namespace Ivony.Configurations
     }
 
 
+
+
+    /// <summary>
+    /// 获取配置值
+    /// </summary>
+    /// <param name="name">配置名称</param>
+    /// <returns>配置值</returns>
     protected ConfigurationValue GetValueCore( string name )
     {
 
@@ -84,6 +105,13 @@ namespace Ivony.Configurations
 
 
 
+
+    /// <summary>
+    /// 获取配置值
+    /// </summary>
+    /// <param name="value">值对象</param>
+    /// <param name="parentName">父级名称</param>
+    /// <returns>配置项</returns>
     private ConfigurationValue GetValueCore( JToken value, string parentName )
     {
       if ( value == null )
@@ -98,7 +126,7 @@ namespace Ivony.Configurations
       var obj = value as JObject;
       if ( obj != null )
       {
-        ConfigurationObject parent = GetParent( parentName );
+        ConfigurationObject parent = GetInheritObject( parentName );
 
         return new ConfigurationObject( obj, parent );
       }
@@ -108,7 +136,12 @@ namespace Ivony.Configurations
 
 
 
-    private ConfigurationObject GetParent( string parentName )
+    /// <summary>
+    /// 获取继承的对象
+    /// </summary>
+    /// <param name="parentName">父级名称</param>
+    /// <returns></returns>
+    private ConfigurationObject GetInheritObject( string parentName )
     {
       var parentObject = (parentName == null ? _data["."] : _data[parentName + "."]) as JObject;
       if ( parentObject == null )
@@ -120,6 +153,11 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 获取父级名称
+    /// </summary>
+    /// <param name="name">当前配置名称</param>
+    /// <returns>父级名称</returns>
     private string GetParentName( string name )
     {
       if ( name == null )
@@ -138,6 +176,11 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 从 JObject 对象创建 ConfigurationObject 对象
+    /// </summary>
+    /// <param name="dataObject">数据对象</param>
+    /// <returns>配置对象</returns>
     public static ConfigurationObject Create( JObject dataObject )
     {
       return new ConfigurationObject( dataObject, null );
@@ -147,6 +190,10 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 以 JSON 格式输出配置对象
+    /// </summary>
+    /// <returns></returns>
     public override string ToString()
     {
       return _data.ToString();
