@@ -9,6 +9,10 @@ using System.Linq.Expressions;
 
 namespace Ivony.Configurations
 {
+
+  /// <summary>
+  /// 定义配置值
+  /// </summary>
   public abstract class ConfigurationValue : IDynamicMetaObjectProvider
   {
 
@@ -90,7 +94,11 @@ namespace Ivony.Configurations
 
 
 
-
+    /// <summary>
+    /// 通过指定键获取配置值
+    /// </summary>
+    /// <param name="key">配置键</param>
+    /// <returns>配置值</returns>
     public virtual ConfigurationValue this[string key] { get { throw new NotSupportedException(); } }
 
 
@@ -100,6 +108,11 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 尝试将配置值转换成指定类型
+    /// </summary>
+    /// <param name="type">要转换的类型</param>
+    /// <returns>转换类型后的值</returns>
     public virtual object TryConvert( Type type )
     {
       throw new InvalidCastException();
@@ -140,6 +153,10 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 string 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator string( ConfigurationValue value )
     {
 
@@ -148,11 +165,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 int 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator int( ConfigurationValue value )
     {
       return CastTo<int>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 int? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator int? ( ConfigurationValue value )
     {
       return CastTo<int?>( value );
@@ -160,11 +185,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 decimal 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator decimal( ConfigurationValue value )
     {
       return CastTo<decimal>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 decimal? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator decimal? ( ConfigurationValue value )
     {
       return CastTo<decimal?>( value );
@@ -173,11 +206,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 double 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator double( ConfigurationValue value )
     {
       return CastTo<double>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 double? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator double? ( ConfigurationValue value )
     {
       return CastTo<double?>( value );
@@ -185,11 +226,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 float 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator float( ConfigurationValue value )
     {
       return CastTo<float>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 float? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator float? ( ConfigurationValue value )
     {
       return CastTo<float?>( value );
@@ -197,11 +246,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 long 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator long( ConfigurationValue value )
     {
       return CastTo<long>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 long? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator long? ( ConfigurationValue value )
     {
       return CastTo<long?>( value );
@@ -209,11 +266,19 @@ namespace Ivony.Configurations
 
 
 
+    /// <summary>
+    /// 将值显示类型转换成为 bool 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator bool( ConfigurationValue value )
     {
       return CastTo<bool>( value );
     }
 
+    /// <summary>
+    /// 将值显示类型转换成为 bool? 类型的运算符
+    /// </summary>
+    /// <param name="value">要转换的值</param>
     public static explicit operator bool? ( ConfigurationValue value )
     {
       return CastTo<bool?>( value );

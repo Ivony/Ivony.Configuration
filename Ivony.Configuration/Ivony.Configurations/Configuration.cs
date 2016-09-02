@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Ivony.Configurations
 {
+
+  /// <summary>
+  /// 提供配置管理的一系列静态方法
+  /// </summary>
   public static class Configuration
   {
 
@@ -16,6 +20,9 @@ namespace Ivony.Configurations
     private static bool _initialized = false;
 
 
+    /// <summary>
+    /// 初始化配置
+    /// </summary>
     public static void Initialize()
     {
       if ( _initialized )
@@ -39,6 +46,10 @@ namespace Ivony.Configurations
 
     private static ConfigurationProvider[] providers;
 
+    /// <summary>
+    /// 获取当前环境的配置数据
+    /// </summary>
+    /// <returns>配置数据</returns>
     public static ConfigurationObject GetConfigurationData()
     {
 

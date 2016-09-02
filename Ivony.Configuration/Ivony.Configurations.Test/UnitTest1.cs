@@ -61,7 +61,7 @@ namespace Ivony.Configurations.Test
       {
         var a = (bool) obj["test2"];
       }
-      catch ( InvalidCastException e )
+      catch ( InvalidCastException )
       {
         return;
       }
