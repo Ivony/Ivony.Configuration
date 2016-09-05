@@ -24,7 +24,12 @@ namespace Ivony.Configurations
     ConfigurationObject _parent;
 
 
-    internal ConfigurationObject( JObject data, ConfigurationObject parent )
+    /// <summary>
+    /// 创建配置对象
+    /// </summary>
+    /// <param name="data">配置数据</param>
+    /// <param name="parent">用于继承的父级对象</param>
+    private ConfigurationObject( JObject data, ConfigurationObject parent )
     {
       _data = (JObject) data.DeepClone();
       _parent = parent;
@@ -140,7 +145,7 @@ namespace Ivony.Configurations
     /// 获取继承的对象
     /// </summary>
     /// <param name="parentName">父级名称</param>
-    /// <returns></returns>
+    /// <returns>继承的配置对象</returns>
     private ConfigurationObject GetInheritObject( string parentName )
     {
       var parentObject = (parentName == null ? _data["."] : _data[parentName + "."]) as JObject;

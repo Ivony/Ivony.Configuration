@@ -30,31 +30,7 @@ namespace Ivony.Configurations
         if ( sections.TryGetValue( sectionString, out conflictAssembly ) )
           throw new Exception( string.Format( "Configuration section {0} confilict, it's registered by assembly \"{1}\" and \"{2}\"", sectionString, conflictAssembly.FullName, item.Assembly.FullName ) );
 
-        result.Merge( LoadConfigurationData( item.Assembly, item.Attribute.Filename, item.Attribute.Section ) );
-      }
-
-
-      return result;
-    }
-
-    private JObject LoadConfigurationData( Assembly assembly, string filename, string[] section )
-    {
-
-      var resourceName = assembly.GetManifestResourceNames().Where( item => item.EndsWith( filename, StringComparison.OrdinalIgnoreCase ) ).FirstOrDefault();
-      if ( resourceName == null )
-        return null;
-
-
-      var result = new JObject();
-      var data = result;
-
-      foreach ( var key in section )
-        data.Add( key, data = new JObject() );
-
-
-      using ( var reader = new StreamReader( assembly.GetManifestResourceStream( resourceName ), Encoding.UTF8 ) )
-      {
-        data.Merge( JObject.Parse( reader.ReadToEnd() ) );
+        result.Merge( item.Attribute.GetAssemblyConfiguration( item.Assembly ) );
       }
 
 

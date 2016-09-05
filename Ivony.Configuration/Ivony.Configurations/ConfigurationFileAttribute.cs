@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using static System.Collections.Specialized.BitVector32;
+using System.Reflection;
+using System.IO;
 
 namespace Ivony.Configurations
 {
@@ -12,7 +15,7 @@ namespace Ivony.Configurations
   /// 指定程序集内嵌配置文件位置的特性
   /// </summary>
   [AttributeUsage( AttributeTargets.Assembly, AllowMultiple = false, Inherited = false )]
-  public sealed class ConfigurationFileAttribute : Attribute
+  public sealed class ConfigurationFileAttribute : AssemblyConfigurationAttribute
   {
     /// <summary>
     /// 使用默认值创建 ConfigurationFileAttribute 对象
@@ -54,5 +57,35 @@ namespace Ivony.Configurations
     /// </summary>
     public string Filename { get; private set; }
 
+
+    /// <summary>
+    /// 重写 GetAssemblyConfiguration 方法获取配置。
+    /// </summary>
+    /// <param name="assembly">程序集对象</param>
+    /// <returns>配置数据</returns>
+    public override JObject GetAssemblyConfiguration( Assembly assembly )
+    {
+
+
+      var resourceName = assembly.GetManifestResourceNames().Where( item => item.EndsWith( Filename, StringComparison.OrdinalIgnoreCase ) ).FirstOrDefault();
+      if ( resourceName == null )
+        return null;
+
+
+      var result = new JObject();
+      var data = result;
+
+      foreach ( var key in Section )
+        data.Add( key, data = new JObject() );
+
+
+      using ( var reader = new StreamReader( assembly.GetManifestResourceStream( resourceName ), Encoding.UTF8 ) )
+      {
+        data.Merge( JObject.Parse( reader.ReadToEnd() ) );
+      }
+
+
+      return result;
+    }
   }
 }
