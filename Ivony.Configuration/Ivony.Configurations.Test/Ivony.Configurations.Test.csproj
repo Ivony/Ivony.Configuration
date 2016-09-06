@@ -59,7 +59,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="default.configuration.json" />
+    <EmbeddedResource Include="configuration.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

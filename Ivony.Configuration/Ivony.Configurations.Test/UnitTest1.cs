@@ -74,7 +74,7 @@ namespace Ivony.Configurations.Test
     {
       var configuration = Configuration.GetConfigurationData();
 
-      Assert.AreEqual( configuration["Test"].ToString(), "test" );
+      Assert.AreEqual( configuration["Ivony"]["Configurations"]["Test"]["Test"].ToString(), "test" );
     }
 
 
