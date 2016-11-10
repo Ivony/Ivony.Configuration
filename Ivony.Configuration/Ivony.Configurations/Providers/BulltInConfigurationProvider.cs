@@ -21,6 +21,7 @@ namespace Ivony.Configurations
 
 
       var files = AppDomain.CurrentDomain.GetAssemblies()
+        .Where( assembly => assembly.IsDynamic == false )//排除动态程序集
         .SelectMany( item => item.GetManifestResourceNames().Select( name => new { Assembly = item, Filename = name } ) )
         .Where( item => item.Filename.EndsWith( postfix ) )
         .OrderBy( item => item.Filename )

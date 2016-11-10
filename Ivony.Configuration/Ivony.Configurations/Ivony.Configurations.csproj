@@ -52,7 +52,6 @@
     <Compile Include="BooleanValue.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="ConfigurationValue.cs" />
-    <Compile Include="AssemblyConfigurationAttribute.cs" />
     <Compile Include="NullValue.cs" />
     <Compile Include="NumberValue.cs" />
     <Compile Include="Providers\BulltInConfigurationProvider.cs" />
