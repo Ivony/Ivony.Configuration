@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Web.Hosting;
 using System.IO;
+using System.Net;
 
 namespace Ivony.Configurations
 {
@@ -30,12 +31,31 @@ namespace Ivony.Configurations
       var setting = ConfigurationManager.AppSettings["configurations"] ?? "";
       foreach ( var file in setting.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries ) )
       {
-        var path = Path.Combine( currentDirectory, file );
-        result.Merge( JObject.Parse( File.ReadAllText( path ) ) );
+
+        Uri url;
+        if ( Uri.TryCreate( file, UriKind.Absolute, out url ) )
+        {
+          result.Merge( Load( url ) );
+        }
+        else
+        {
+          var path = Path.Combine( currentDirectory, file );
+          result.Merge( Load( path ) );
+        }
       }
 
       return result;
 
+    }
+
+    private object Load( Uri url )
+    {
+      return JObject.Parse( new WebClient().DownloadString( url ) );
+    }
+
+    private object Load( string path )
+    {
+      return JObject.Parse( File.ReadAllText( path ) );
     }
   }
 }
