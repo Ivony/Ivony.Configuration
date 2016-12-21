@@ -9,12 +9,10 @@ namespace Ivony.Configurations
 {
 
   /// <summary>
-  /// 提供配置管理的一系列静态方法
+  /// 提供配置管理的一系列静态方法以及协助获取当前配置
   /// </summary>
-  public static class Configuration
+  public abstract class ConfigurationManager
   {
-
-
 
     private static object _sync = new object();
     private static bool _initialized = false;
@@ -46,22 +44,39 @@ namespace Ivony.Configurations
 
     private static ConfigurationProvider[] providers;
 
+
+
+    private static Lazy<ConfigurationObject> lazyLoader = new Lazy<ConfigurationObject>( () =>
+     {
+       Initialize();
+
+       var result = new JObject();
+       foreach ( var item in providers )
+       {
+         result.Merge( item.GetConfigurationData() );
+       }
+
+       return ConfigurationObject.Create( result );
+     } );
+
     /// <summary>
     /// 获取当前环境的配置数据
     /// </summary>
-    /// <returns>配置数据</returns>
-    public static ConfigurationObject GetConfigurationData()
+    /// <returns>全局的配置数据</returns>
+    public static ConfigurationObject GlobalConfiguration
     {
-
-      Initialize();
-
-      var result = new JObject();
-      foreach ( var item in providers )
-      {
-        result.Merge( item.GetConfigurationData() );
-      }
-
-      return ConfigurationObject.Create( result );
+      get { return lazyLoader.Value; }
     }
+
+
+    /// <summary>
+    /// 获取当前命名空间的配置数据
+    /// </summary>
+    /// <returns>类型所处命名空间的配置数据</returns>
+    public ConfigurationObject Configuration
+    {
+      get { return (ConfigurationObject) GlobalConfiguration[GetType().Namespace]; }
+    }
+
   }
 }

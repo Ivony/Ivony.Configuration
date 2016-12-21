@@ -50,12 +50,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BooleanValue.cs" />
+    <Compile Include="BuiltInConfigurationAttribute.cs" />
     <Compile Include="ConfigurationObject.cs" />
     <Compile Include="ConfigurationValue.cs" />
     <Compile Include="NullValue.cs" />
     <Compile Include="NumberValue.cs" />
     <Compile Include="Providers\BulltInConfigurationProvider.cs" />
-    <Compile Include="Configuration.cs" />
+    <Compile Include="ConfigurationManager.cs" />
     <Compile Include="ConfigurationProvider.cs" />
     <Compile Include="Providers\ExternalConfigurationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,7 +3,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using Ivony.Configurations;
 
-//[assembly: ConfigurationFile()]
 namespace Ivony.Configurations.Test
 {
   [TestClass]
@@ -69,12 +68,17 @@ namespace Ivony.Configurations.Test
     }
 
 
+    private class Configuration : ConfigurationManager
+    {
+
+    }
+
     [TestMethod]
     public void ConfigurationProviders()
     {
-      var configuration = Configuration.GetConfigurationData();
+      var configuration = new Configuration().Configuration;
 
-      Assert.AreEqual( configuration["Ivony"]["Configurations"]["Test"]["Test"].ToString(), "test" );
+      Assert.AreEqual( configuration["Test"].ToString(), "test" );
     }
 
 

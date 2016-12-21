@@ -12,7 +12,6 @@ namespace Ivony.Configurations
 {
   internal sealed class BuiltInConfigurationProvider : ConfigurationProvider
   {
-    private static readonly string postfix = ".configuration.json";
 
     public override JObject GetConfigurationData()
     {
@@ -20,43 +19,45 @@ namespace Ivony.Configurations
 
 
 
-      var files = AppDomain.CurrentDomain.GetAssemblies()
-        .Where( assembly => assembly.IsDynamic == false )//排除动态程序集
-        .SelectMany( item => item.GetManifestResourceNames().Select( name => new { Assembly = item, Filename = name } ) )
-        .Where( item => item.Filename.EndsWith( postfix ) )
-        .OrderBy( item => item.Filename )
-        .ToArray();
+      var list = from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                 where assembly.IsDynamic == false
+                 let attributes = assembly.GetCustomAttributes<BuiltInConfigurationAttribute>()
+                 let result = attributes.Any()
+                                ? from item in attributes select item.LoadConfigurationData( assembly )
+                                : BuiltInConfigurationAttribute.LoadDefaultConfigurationData( assembly )
+
+                 from dataItem in result
+                 select dataItem;
 
 
 
-      var result = new JObject();
-      var sectionSet = new Dictionary<string, Assembly>();
-
-
-      foreach ( var item in files )
       {
-        using ( var stream = item.Assembly.GetManifestResourceStream( item.Filename ) )
+
+        var result = new JObject();
+        var sectionSet = new Dictionary<string, Assembly>();
+
+
+        foreach ( var item in list )
         {
+          if ( item == null )
+            continue;
+
           var data = new JObject();
-          var section = item.Filename.Remove( item.Filename.Length - postfix.Length );
 
           Assembly conflictAssembly;
-          if ( sectionSet.TryGetValue( section, out conflictAssembly ) )
-            throw new Exception( string.Format( "Configuration section {0} confilict, it's registered by assembly \"{1}\" and \"{2}\"", section, conflictAssembly.FullName, item.Assembly.FullName ) );
-          sectionSet.Add( section, item.Assembly );
+          if ( sectionSet.TryGetValue( item.Section, out conflictAssembly ) )
+            throw new Exception( string.Format( "Configuration section {0} confilict, it's registered by assembly \"{1}\" and \"{2}\"", item.Section, conflictAssembly.FullName, item.Assembly.FullName ) );
+          sectionSet.Add( item.Section, item.Assembly );
 
 
+          data[item.Section] = item.Data;
 
-          foreach ( var key in section.Split( '.' ) )
-            data.Add( key, data = new JObject() );
-
-          data.Merge( JObject.ReadFrom( new JsonTextReader( new StreamReader( stream ) ) ) );
-
-          result.Merge( data.Root );
+          result.Merge( data );
         }
-      }
 
-      return result;
+        return result;
+
+      }
     }
   }
 }
