@@ -28,7 +28,7 @@ namespace Ivony.Configurations
 
       var result = new JObject();
 
-      var setting = ConfigurationManager.AppSettings["configurations"] ?? "";
+      var setting = System.Configuration.ConfigurationManager.AppSettings["configurations"] ?? "";
       foreach ( var file in setting.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries ) )
       {
 
