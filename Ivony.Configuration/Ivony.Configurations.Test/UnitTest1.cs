@@ -286,5 +286,22 @@ namespace Ivony.Configurations.Test
       }
 
     }
+
+
+
+    [TestMethod]
+    public void InheritGlobalTest()
+    {
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{ \"global-test\": 1, \"A\":{ \"test\": 2 } }" ) );
+        Assert.AreEqual( (int?) obj[".A"]["test"], 2 );
+      }
+
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{ \"global-test\": 1, \"A\":{ \"test\": 2 } }" ) );
+        Assert.AreEqual( (int?) obj[".A"]["global-test"], 1 );
+      }
+
+    }
   }
 }

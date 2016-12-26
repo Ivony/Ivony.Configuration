@@ -70,12 +70,28 @@ namespace Ivony.Configurations
 
 
     /// <summary>
+    /// 获取指定命名空间的配置数据
+    /// </summary>
+    public static ConfigurationObject GetConfiguration( string @namespace )
+    {
+      if ( string.IsNullOrEmpty( @namespace ) )
+        return GlobalConfiguration;
+
+      else
+        return (ConfigurationObject) GlobalConfiguration["." + @namespace];
+    }
+
+
+    /// <summary>
     /// 获取当前命名空间的配置数据
     /// </summary>
     /// <returns>类型所处命名空间的配置数据</returns>
     public ConfigurationObject Configuration
     {
-      get { return (ConfigurationObject) GlobalConfiguration[GetType().Namespace]; }
+      get
+      {
+        return GetConfiguration( GetType().Namespace );
+      }
     }
 
   }

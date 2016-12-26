@@ -61,6 +61,14 @@ namespace Ivony.Configurations
       if ( name == null )
         throw new ArgumentNullException( "name" );
 
+      var fallbackGlobal = false;
+      if ( name.StartsWith( "." ) )
+      {
+        fallbackGlobal = true;
+        name = name.Substring( 1 );
+      }
+
+
       if ( nameRegex.IsMatch( name ) == false )
         throw new ArgumentException( "must provide a valid name", "name" );
 
@@ -73,7 +81,7 @@ namespace Ivony.Configurations
       var dataName = name;
       while ( dataName != null )
       {
-        value = GetValueCore( dataName );
+        value = GetValueCore( dataName, fallbackGlobal ? this : null );
         if ( value != null )
           return value;
 
@@ -94,8 +102,9 @@ namespace Ivony.Configurations
     /// 获取配置值
     /// </summary>
     /// <param name="name">配置名称</param>
+    /// <param name="candidateFallback">候选的回溯对象</param>
     /// <returns>配置值</returns>
-    protected ConfigurationValue GetValueCore( string name )
+    protected ConfigurationValue GetValueCore( string name, ConfigurationObject candidateFallback = null )
     {
 
       var parentName = GetParentName( (string) name );
@@ -105,7 +114,7 @@ namespace Ivony.Configurations
         return null;
 
       else
-        return GetValueCore( value, parentName );
+        return GetValueCore( value, parentName, candidateFallback );
     }
 
 
@@ -116,8 +125,9 @@ namespace Ivony.Configurations
     /// </summary>
     /// <param name="value">值对象</param>
     /// <param name="parentName">父级名称</param>
+    /// <param name="candidateFallback">候选的回溯对象</param>
     /// <returns>配置项</returns>
-    private ConfigurationValue GetValueCore( JToken value, string parentName )
+    private ConfigurationValue GetValueCore( JToken value, string parentName, ConfigurationObject candidateFallback = null )
     {
       if ( value == null )
         throw new ArgumentNullException( "value" );
@@ -133,7 +143,7 @@ namespace Ivony.Configurations
       {
         ConfigurationObject parent = GetInheritObject( parentName );
 
-        return new ConfigurationObject( obj, parent );
+        return new ConfigurationObject( obj, parent ?? candidateFallback );
       }
 
       throw new NotSupportedException();
