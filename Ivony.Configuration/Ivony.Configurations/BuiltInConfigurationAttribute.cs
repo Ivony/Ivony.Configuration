@@ -14,7 +14,7 @@ namespace Ivony.Configurations
   /// <summary>
   /// 指示内置的配置文件名的特性
   /// </summary>
-  [AttributeUsage( AttributeTargets.Assembly )]
+  [AttributeUsage( AttributeTargets.Assembly, AllowMultiple = true, Inherited = false )]
   public class BuiltInConfigurationAttribute : Attribute
   {
 

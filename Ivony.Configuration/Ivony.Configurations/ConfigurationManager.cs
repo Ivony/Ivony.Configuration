@@ -69,6 +69,24 @@ namespace Ivony.Configurations
     }
 
 
+
+    /// <summary>
+    /// 获取指定命名空间的配置数据
+    /// </summary>
+    /// <typeparam name="T">用于查找命名空间的类型</typeparam>
+    /// <param name="obj">用于查找命名空间的类型实例</param>
+    public static ConfigurationObject GetConfiguration<T>( T obj = default( T ) )
+    {
+      Type type;
+      if ( obj == null )
+        type = typeof( T );
+      else
+        type = obj.GetType();
+
+      return GetConfiguration( type.Namespace );
+    }
+
+
     /// <summary>
     /// 获取指定命名空间的配置数据
     /// </summary>

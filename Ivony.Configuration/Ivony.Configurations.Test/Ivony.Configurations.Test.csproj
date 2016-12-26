@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="configuration.json" />
+    <EmbeddedResource Include="global.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -61,10 +61,10 @@ namespace Ivony.Configurations
       if ( name == null )
         throw new ArgumentNullException( "name" );
 
-      var fallbackGlobal = false;
+      var fallbackRoot = false;
       if ( name.StartsWith( "." ) )
       {
-        fallbackGlobal = true;
+        fallbackRoot = true;
         name = name.Substring( 1 );
       }
 
@@ -78,15 +78,9 @@ namespace Ivony.Configurations
       ConfigurationValue value = null;
 
 
-      var dataName = name;
-      while ( dataName != null )
-      {
-        value = GetValueCore( dataName, fallbackGlobal ? this : null );
-        if ( value != null )
-          return value;
-
-        dataName = GetParentName( dataName );
-      }
+      value = GetValueCore( name, fallbackRoot ? this : null );
+      if ( value != null )
+        return value;
 
 
       if ( _parent != null )
@@ -107,11 +101,17 @@ namespace Ivony.Configurations
     protected ConfigurationValue GetValueCore( string name, ConfigurationObject candidateFallback = null )
     {
 
-      var parentName = GetParentName( (string) name );
+      var parentName = GetParentName( name );
       var value = _data[name] ?? (parentName == null ? _data["*"] : _data[parentName + ".*"]);
 
       if ( value == null )
-        return null;
+      {
+        if ( parentName == null )
+          return candidateFallback;
+
+        else
+          return GetValueCore( parentName, candidateFallback );
+      }
 
       else
         return GetValueCore( value, parentName, candidateFallback );

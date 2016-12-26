@@ -50,7 +50,10 @@ namespace Ivony.Configurations
           sectionSet.Add( item.Section, item.Assembly );
 
 
-          data[item.Section] = item.Data;
+          if ( string.IsNullOrEmpty( item.Section ) )
+            data = item.Data;
+          else
+            data[item.Section] = item.Data;
 
           result.Merge( data );
         }

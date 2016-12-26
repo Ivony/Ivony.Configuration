@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using Ivony.Configurations;
 
+[assembly: BuiltInConfiguration( "Ivony.Configurations.Test.configuration.json", "Ivony.Configurations.Test" )]
+[assembly: BuiltInConfiguration( "Ivony.Configurations.Test.global.json" )]
+
 namespace Ivony.Configurations.Test
 {
   [TestClass]
@@ -302,6 +305,37 @@ namespace Ivony.Configurations.Test
         Assert.AreEqual( (int?) obj[".A"]["global-test"], 1 );
       }
 
+    }
+
+
+    [TestMethod]
+    public void ConfigurationManagerTest()
+    {
+
+      {
+        var configuration = new Configuration().Configuration;
+        Assert.AreEqual( configuration["Test"].ToString(), "test" );
+      }
+      {
+        var configuration = ConfigurationManager.GetConfiguration<Configuration>();
+        Assert.AreEqual( configuration["Test"].ToString(), "test" );
+      }
+      {
+        var configuration = ConfigurationManager.GetConfiguration( "Ivony.Configurations.Test" );
+        Assert.AreEqual( configuration["Test"].ToString(), "test" );
+      }
+      {
+        var configuration = ConfigurationManager.GetConfiguration( new Configuration() );
+        Assert.AreEqual( configuration["Test"].ToString(), "test" );
+      }
+      {
+        var configuration = ConfigurationManager.GetConfiguration( "" );
+        Assert.AreEqual( configuration["Test"].ToString(), "global-test" );
+      }
+      {
+        var configuration = ConfigurationManager.GetConfiguration( new object() );
+        Assert.AreEqual( configuration["Test"].ToString(), "global-test" );
+      }
     }
   }
 }
