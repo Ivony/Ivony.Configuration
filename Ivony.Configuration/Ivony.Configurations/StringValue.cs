@@ -8,7 +8,7 @@ namespace Ivony.Configurations
   {
     private string value;
 
-    public StringValue( string value )
+    public StringValue(string value)
     {
       this.value = value;
     }
@@ -16,8 +16,8 @@ namespace Ivony.Configurations
 
     protected class DynamicValueProxy : DynamicMetaObject
     {
-      public DynamicValueProxy( Expression expression )
-        : base( expression, BindingRestrictions.GetTypeRestriction( expression, typeof( ConfigurationValue ) ) ) { }
+      public DynamicValueProxy(Expression expression)
+        : base(expression, BindingRestrictions.GetTypeRestriction(expression, typeof(ConfigurationValue))) { }
     }
 
 
@@ -27,13 +27,19 @@ namespace Ivony.Configurations
     }
 
 
-    public override object TryConvert( Type type )
+    protected override bool TryConvertTo(Type type, out object value)
     {
-      if ( type == typeof( string ) )
-        return value;
+      if (type == typeof(string))
+      {
+        value = this.value;
+        return true;
+      }
 
       else
-        throw new InvalidCastException();
+      {
+        value = null;
+        return false;
+      }
     }
   }
 }

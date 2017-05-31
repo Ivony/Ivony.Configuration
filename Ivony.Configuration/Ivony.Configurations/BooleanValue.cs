@@ -9,7 +9,7 @@ namespace Ivony.Configurations
   {
     public bool Value { get; }
 
-    public BooleanValue( bool value )
+    public BooleanValue(bool value)
     {
       Value = value;
     }
@@ -19,17 +19,22 @@ namespace Ivony.Configurations
 
     public override string ToString()
     {
-      return Value.ToString( CultureInfo.InvariantCulture );
+      return Value.ToString(CultureInfo.InvariantCulture);
     }
 
 
-    public override object TryConvert( Type type )
+    protected override bool TryConvertTo(Type type, out object value)
     {
-      if ( type == typeof( bool ) )
-        return Value;
-
+      if (type == typeof(bool))
+      {
+        value = Value;
+        return true;
+      }
       else
-        throw new InvalidCastException();
+      {
+        value = null;
+        return false;
+      }
     }
 
   }

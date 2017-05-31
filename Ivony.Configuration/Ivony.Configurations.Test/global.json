@@ -1,3 +1,7 @@
 ﻿{
-  "Test": "global-test"
+  "Test": "global-test",
+  "Ivony":
+  {
+    "inherit": "inherit-test"
+  }
 }

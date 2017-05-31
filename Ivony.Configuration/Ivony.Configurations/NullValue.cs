@@ -7,13 +7,14 @@ namespace Ivony.Configurations
   internal class NullValue : ConfigurationValue
   {
 
-    public override object TryConvert( Type type )
+    protected override bool TryConvertTo(Type type, out object value)
     {
-      if ( type.IsValueType == false || type.GetGenericTypeDefinition() == typeof( Nullable<> ) )
-        return null;
+      value = null;
+      if (type.IsValueType == false || type.GetGenericTypeDefinition() == typeof(Nullable<>))
+        return true;
 
       else
-        throw new InvalidCastException();
+        return false;
     }
   }
 }

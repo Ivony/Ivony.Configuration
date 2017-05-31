@@ -52,6 +52,7 @@
     <Compile Include="BooleanValue.cs" />
     <Compile Include="BuiltInConfigurationAttribute.cs" />
     <Compile Include="ConfigurationObject.cs" />
+    <Compile Include="ConfigurationPropertyAttribute.cs" />
     <Compile Include="ConfigurationValue.cs" />
     <Compile Include="NullValue.cs" />
     <Compile Include="NumberValue.cs" />

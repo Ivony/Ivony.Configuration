@@ -292,6 +292,18 @@ namespace Ivony.Configurations.Test
 
 
 
+
+    [TestMethod]
+    public void InheritTest6()
+    {
+      {
+        var obj = ConfigurationObject.Create( JObject.Parse( "{ \"A\": { Test: \"test\" }, \"A.B.C\": { Test1: \"test\" } }" ) );
+        Assert.AreEqual( (string) obj["A.B.C"]["Test"], "test" );
+      }
+    }
+
+
+
     [TestMethod]
     public void InheritGlobalTest()
     {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,12 +24,12 @@ namespace Ivony.Configurations
     /// </summary>
     public static void Initialize()
     {
-      if ( _initialized )
+      if (_initialized)
         return;
 
-      lock ( _sync )
+      lock (_sync)
       {
-        if ( _initialized )
+        if (_initialized)
           return;
 
         InitializeProviders();
@@ -46,18 +47,18 @@ namespace Ivony.Configurations
 
 
 
-    private static Lazy<ConfigurationObject> lazyLoader = new Lazy<ConfigurationObject>( () =>
-     {
-       Initialize();
+    private static Lazy<ConfigurationObject> lazyLoader = new Lazy<ConfigurationObject>(() =>
+    {
+      Initialize();
 
-       var result = new JObject();
-       foreach ( var item in providers )
-       {
-         result.Merge( item.GetConfigurationData() );
-       }
+      var result = new JObject();
+      foreach (var item in providers)
+      {
+        result.Merge(item.GetConfigurationData());
+      }
 
-       return ConfigurationObject.Create( result );
-     } );
+      return ConfigurationObject.Create(result);
+    });
 
     /// <summary>
     /// 获取当前环境的配置数据
@@ -75,28 +76,38 @@ namespace Ivony.Configurations
     /// </summary>
     /// <typeparam name="T">用于查找命名空间的类型</typeparam>
     /// <param name="obj">用于查找命名空间的类型实例</param>
-    public static ConfigurationObject GetConfiguration<T>( T obj = default( T ) )
+    public static ConfigurationObject GetConfiguration<T>()
+    {
+      return GetConfiguration(typeof(T).Namespace);
+    }
+
+    /// <summary>
+    /// 获取指定命名空间的配置数据
+    /// </summary>
+    /// <typeparam name="T">用于查找命名空间的类型</typeparam>
+    /// <param name="obj">用于查找命名空间的类型实例</param>
+    public static ConfigurationObject GetConfiguration<T>(T obj)
     {
       Type type;
-      if ( obj == null )
-        type = typeof( T );
+      if (obj == null)
+        type = typeof(T);
       else
         type = obj.GetType();
 
-      return GetConfiguration( type.Namespace );
+      return GetConfiguration(type.Namespace);
     }
 
 
     /// <summary>
     /// 获取指定命名空间的配置数据
     /// </summary>
-    public static ConfigurationObject GetConfiguration( string @namespace )
+    public static ConfigurationObject GetConfiguration(string @namespace)
     {
-      if ( string.IsNullOrEmpty( @namespace ) )
+      if (string.IsNullOrEmpty(@namespace))
         return GlobalConfiguration;
 
       else
-        return (ConfigurationObject) GlobalConfiguration["." + @namespace];
+        return (ConfigurationObject)GlobalConfiguration["." + @namespace];
     }
 
 
@@ -104,11 +115,27 @@ namespace Ivony.Configurations
     /// 获取当前命名空间的配置数据
     /// </summary>
     /// <returns>类型所处命名空间的配置数据</returns>
-    public ConfigurationObject Configuration
+    protected ConfigurationObject CurrentConfiguration
     {
       get
       {
-        return GetConfiguration( GetType().Namespace );
+        return GetConfiguration(GetType().Namespace);
+      }
+    }
+
+    protected void Init()
+    {
+      foreach (var property in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+      {
+
+        if (property.CanWrite == false)
+          continue;
+
+        var name = property.GetCustomAttribute<ConfigurationPropertyAttribute>()?.Name ?? property.Name;
+        var value = CurrentConfiguration.GetValue(name);
+        //value.TryCastTo(property.PropertyType, out object value);
+
+
       }
     }
 

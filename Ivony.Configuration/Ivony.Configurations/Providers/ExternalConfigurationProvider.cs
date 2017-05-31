@@ -29,7 +29,11 @@ namespace Ivony.Configurations
       var result = new JObject();
 
       var setting = System.Configuration.ConfigurationManager.AppSettings["configurations"] ?? "";
-      foreach ( var file in setting.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries ) )
+
+
+      var files = new List<string>( setting.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries ) );
+
+      foreach ( var file in files )
       {
 
         Uri url;
@@ -55,7 +59,11 @@ namespace Ivony.Configurations
 
     private object Load( string path )
     {
-      return JObject.Parse( File.ReadAllText( path ) );
+      if ( File.Exists( path ) )
+        return JObject.Parse( File.ReadAllText( path ) );
+
+      else
+        return new JObject();
     }
   }
 }

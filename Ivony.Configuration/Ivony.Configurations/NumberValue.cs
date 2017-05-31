@@ -8,7 +8,7 @@ namespace Ivony.Configurations
   {
     private readonly decimal value;
 
-    public NumberValue( decimal value )
+    public NumberValue(decimal value)
     {
       this.value = value;
     }
@@ -16,7 +16,7 @@ namespace Ivony.Configurations
 
     public override string ToString()
     {
-      return value.ToString( System.Globalization.CultureInfo.InvariantCulture );
+      return value.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 
 
@@ -24,26 +24,44 @@ namespace Ivony.Configurations
 
 
 
-    public override object TryConvert( Type type )
+    protected override bool TryConvertTo(Type type, out object value)
     {
-      if ( type == typeof( decimal ) )
-        return value;
+      if (type == typeof(decimal))
+      {
+        value = this.value;
+        return true;
+      }
 
-      else if ( type == typeof( int ) )
-        return (int) value;
+      else if (type == typeof(int))
+      {
+        value = (int)this.value;
+        return true;
+      }
 
-      else if ( type == typeof( long ) )
-        return (long) value;
+      else if (type == typeof(long))
+      {
+        value = (long)this.value;
+        return true;
+      }
 
-      else if ( type == typeof( float ) )
-        return (float) value;
+      else if (type == typeof(float))
+      {
+        value = (float)this.value;
+        return true;
+      }
 
-      else if ( type == typeof( double ) )
-        return (double) value;
+      else if (type == typeof(double))
+      {
+        value = (double)this.value;
+        return true;
+      }
 
 
       else
-        throw new InvalidCastException();
+      {
+        value = null;
+        return false;
+      }
     }
 
 
